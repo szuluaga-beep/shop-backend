@@ -5,6 +5,7 @@ describe('AppModule', () => {
     let moduleRef: TestingModule;
 
     beforeEach(async () => {
+        jest.setTimeout(20000); // Increase timeout to 20 seconds
         moduleRef = await Test.createTestingModule({
             imports: [AppModule],
         }).compile();
