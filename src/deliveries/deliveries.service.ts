@@ -9,8 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class DeliveriesService {
   constructor(
     @InjectRepository(Delivery)
-    private deliveriesRepository: Repository<Delivery>
-  ) { }
+    private deliveriesRepository: Repository<Delivery>,
+  ) {}
 
   async create(createDeliveryDto: CreateDeliveryDto) {
     const delivery = this.deliveriesRepository.create(createDeliveryDto);
@@ -31,7 +31,6 @@ export class DeliveriesService {
   }
 
   async update(id: number, updateDeliveryDto: UpdateDeliveryDto) {
-
     const deliveryUpdated = await this.deliveriesRepository.preload({
       id,
       ...updateDeliveryDto,

@@ -10,8 +10,8 @@ import { v4 as uuidv4 } from 'uuid';
 export class TransactionsService {
   constructor(
     @InjectRepository(Transaction)
-    private readonly transactionRepository: Repository<Transaction>
-  ){}
+    private readonly transactionRepository: Repository<Transaction>,
+  ) {}
 
   async create(createTransactionDto: CreateTransactionDto) {
     const { amount, currency, status } = createTransactionDto;
@@ -35,7 +35,7 @@ export class TransactionsService {
   }
 
   async update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    const transaction=await this.transactionRepository.preload({
+    const transaction = await this.transactionRepository.preload({
       id,
       ...updateTransactionDto,
     });

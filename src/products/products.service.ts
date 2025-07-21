@@ -7,11 +7,10 @@ import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
-
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
-  ) { }
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     const product = this.productRepository.create(createProductDto);
@@ -21,8 +20,8 @@ export class ProductsService {
   async findAll() {
     return await this.productRepository.find({
       where: {
-        quantity: MoreThan(0) // Only return products with stock available
-      }
+        quantity: MoreThan(0), // Only return products with stock available
+      },
     });
   }
 

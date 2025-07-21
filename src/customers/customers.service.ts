@@ -7,15 +7,16 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class CustomersService {
-
   constructor(
     @InjectRepository(Customer)
-    private customersRepository: Repository<Customer>
-  ) { }
+    private customersRepository: Repository<Customer>,
+  ) {}
 
   async create(createCustomerDto: CreateCustomerDto) {
     // Validate unique email
-    const existingCustomer = await this.customersRepository.findOne({ where: { email: createCustomerDto.email } });
+    const existingCustomer = await this.customersRepository.findOne({
+      where: { email: createCustomerDto.email },
+    });
 
     if (existingCustomer) {
       return existingCustomer;
@@ -38,7 +39,9 @@ export class CustomersService {
   }
 
   async findByEmail(email: string) {
-    const customer = await this.customersRepository.findOne({ where: { email } });
+    const customer = await this.customersRepository.findOne({
+      where: { email },
+    });
     if (!customer) {
       throw new NotFoundException(`Customer with email ${email} not found`);
     }
@@ -46,7 +49,6 @@ export class CustomersService {
   }
 
   async update(id: number, updateCustomerDto: UpdateCustomerDto) {
-
     const updatedCustomer = await this.customersRepository.preload({
       id,
       ...updateCustomerDto,
@@ -62,5 +64,4 @@ export class CustomersService {
     const customer = await this.findOne(id);
     await this.customersRepository.remove(customer);
   }
-
 }

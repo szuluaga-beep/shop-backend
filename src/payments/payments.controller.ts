@@ -12,5 +12,4 @@ export class PaymentsController {
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentsService.create(createPaymentDto);
   }
-
 }

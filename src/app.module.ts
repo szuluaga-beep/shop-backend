@@ -15,7 +15,7 @@ import { AppService } from './app.service';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: "postgres",
+        type: 'postgres',
         host: configService.getOrThrow('DB_HOST'),
         database: configService.getOrThrow('DB_NAME'),
         username: configService.getOrThrow('DB_USER'),
@@ -24,18 +24,16 @@ import { AppService } from './app.service';
         autoLoadEntities: true,
         synchronize: true,
         ssl: true,
-
       }),
       inject: [ConfigService],
-
     }),
     ProductsModule,
     PaymentsModule,
     TransactionsModule,
     CustomersModule,
-    DeliveriesModule
+    DeliveriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

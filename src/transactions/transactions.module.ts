@@ -6,9 +6,7 @@ import { Transaction } from './entities/transaction.entity';
 
 @Module({
   controllers: [TransactionsController],
-  imports: [
-    TypeOrmModule.forFeature([Transaction])
-  ],
+  imports: [TypeOrmModule.forFeature([Transaction])],
   providers: [TransactionsService],
 })
-export class TransactionsModule { }
+export class TransactionsModule {}
