@@ -7,7 +7,7 @@ import {
   IsString,
   Matches,
 } from 'class-validator';
-import { StatusTransaction } from 'src/common/enums/status-transaction.enum';
+import { StatusTransaction } from '../../common/enums/status-transaction.enum';
 
 export class CreateTransactionDto {
   @IsNotEmpty()
@@ -40,4 +40,6 @@ export class CreateTransactionDto {
     example: StatusTransaction.PENDING,
   })
   status: StatusTransaction;
+
+
 }
