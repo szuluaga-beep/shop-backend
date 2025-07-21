@@ -4,19 +4,20 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatePaymentDto } from './dto/create-payment.dto';
-import { ConfigService } from '@nestjs/config';
-import { TokenCard } from 'src/common/interfaces/token-card.interface';
-import { Aceptation } from 'src/common/interfaces/aceptation-token.interface';
-import { PaymentSources } from 'src/common/interfaces/payment-sources.interface';
-import { StatusTransaction } from 'src/common/enums/status-transaction.enum';
-import { WompiTransaction } from 'src/common/interfaces/wompi-transaction';
-import { DataSource } from 'typeorm';
-import { Transaction } from 'src/transactions/entities/transaction.entity';
-import { Customer } from 'src/customers/entities/customer.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { Product } from 'src/products/entities/product.entity';
-import { Delivery } from 'src/deliveries/entities/delivery.entity';
+import { ConfigService } from '@nestjs/config';
+import { DataSource } from 'typeorm';
+
+import { CreatePaymentDto } from './dto/create-payment.dto';
+import { TokenCard } from '../common/interfaces/token-card.interface';
+import { Aceptation } from '../common/interfaces/aceptation-token.interface';
+import { PaymentSources } from '../common/interfaces/payment-sources.interface';
+import { StatusTransaction } from '../common/enums/status-transaction.enum';
+import { WompiTransaction } from '../common/interfaces/wompi-transaction';
+import { Transaction } from '../transactions/entities/transaction.entity';
+import { Customer } from '../customers/entities/customer.entity';
+import { Product } from '../products/entities/product.entity';
+import { Delivery } from '../deliveries/entities/delivery.entity';
 
 @Injectable()
 export class PaymentsService {

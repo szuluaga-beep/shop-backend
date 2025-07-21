@@ -1,7 +1,3 @@
-import { StatusTransaction } from 'src/common/enums/status-transaction.enum';
-import { Customer } from 'src/customers/entities/customer.entity';
-import { Delivery } from 'src/deliveries/entities/delivery.entity';
-import { Product } from 'src/products/entities/product.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,6 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { StatusTransaction } from '../../common/enums/status-transaction.enum';
+import { Customer } from '../../customers/entities/customer.entity';
+import { Delivery } from '../../deliveries/entities/delivery.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Entity('transactions')
 export class Transaction {
