@@ -21,7 +21,8 @@ import { DeliveriesModule } from './deliveries/deliveries.module';
         port: +configService.getOrThrow<number>('DB_PORT'),
         autoLoadEntities: true,
         synchronize: true,
-        
+        ssl: true,
+
       }),
       inject: [ConfigService],
 
