@@ -1,6 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { ConfigService } from '@nestjs/config';
 import { TokenCard } from 'src/common/interfaces/token-card.interface';
 import { Aceptation } from 'src/common/interfaces/aceptation-token.interface';
@@ -8,66 +7,97 @@ import { PaymentSources } from 'src/common/interfaces/payment-sources.interface'
 import { TransactionsService } from 'src/transactions/transactions.service';
 import { StatusTransaction } from 'src/common/enums/status-transaction.enum';
 import { WompiTransaction } from 'src/common/interfaces/wompi-transaction';
+import { DataSource } from 'typeorm';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { CustomersService } from 'src/customers/customers.service';
+import { Customer } from 'src/customers/entities/customer.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { Product } from 'src/products/entities/product.entity';
 
 @Injectable()
 export class PaymentsService {
 
   constructor(
     private configService: ConfigService,
-    private transactionService: TransactionsService
+    private transactionService: TransactionsService,
+    private dataSource: DataSource,
+    private customerService: CustomersService
   ) { }
 
   async create(createPaymentDto: CreatePaymentDto) {
-    const { amountInCents: amounInCents, customerEmail } = createPaymentDto;
+    const { amountInCents: amounInCents, customerEmail, customerFullName, productId } = createPaymentDto;
 
-    const tokenCard = await this.createTokenCard(createPaymentDto);
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    const transaction = await this.transactionService.create({
-      amount: amounInCents,
-      currency: "COP",
-      status: StatusTransaction.PENDING,
-    })
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
-    const aceptationTokens = await this.getAceptationTokens();
-    const paymentSources = await this.createPaymentSources(
-      tokenCard.data.id,
-      createPaymentDto.customerEmail,
-      aceptationTokens.data.presigned_acceptance.acceptance_token,
-      aceptationTokens.data.presigned_personal_data_auth.acceptance_token
-    );
-
-    const wompiTransaction = await this.createWompiTransaction(amounInCents, transaction.transactionId,
-      paymentSources.data.id, customerEmail
-    );
-
-    // Update the transaction with the Wompi transaction ID
-    const wompiTransactionStatus = await this.getTransactionById(wompiTransaction.data.id);
+      const customer = new Customer();
+      customer.email = customerEmail;
+      customer.name = customerFullName;
 
 
-    const updatedTransaction = await this.transactionService.update(transaction.id, {
-      status: wompiTransactionStatus.data.status === "APPROVED" ? StatusTransaction.COMPLETED : StatusTransaction.FAILED
-    });
+      await queryRunner.manager.save(customer);
 
 
-    return updatedTransaction
+      const transaction = new Transaction();
+      transaction.amount = amounInCents;
+      transaction.currency = "COP";
+      transaction.status = StatusTransaction.PENDING;
+      transaction.customer = customer;
+      transaction.transactionId = uuidv4();
+
+      await queryRunner.manager.save(transaction);
+
+      const tokenCard = await this.createTokenCard(createPaymentDto);
+
+      const aceptationTokens = await this.getAceptationTokens();
+      const paymentSources = await this.createPaymentSources(
+        tokenCard.data.id,
+        createPaymentDto.customerEmail,
+        aceptationTokens.data.presigned_acceptance.acceptance_token,
+        aceptationTokens.data.presigned_personal_data_auth.acceptance_token
+      );
+
+      const wompiTransaction = await this.createWompiTransaction(amounInCents, transaction.transactionId,
+        paymentSources.data.id, customerEmail
+      );
+
+      // Update the transaction with the Wompi transaction ID
+      const wompiTransactionStatus = await this.getTransactionById(wompiTransaction.data.id);
+
+
+      // Usando el queryRunner para actualizar la transacción con TypeORM
+      transaction.status = wompiTransactionStatus.data.status === "APPROVED" ? StatusTransaction.COMPLETED : StatusTransaction.FAILED;
+      const updatedTransaction = await queryRunner.manager.save(transaction);
+
+      // Update the stock or product inventory here if needed
+
+      const product = await queryRunner.manager.findOne(Product, { where: { id: productId } });
+
+      if (!product) {
+        throw new NotFoundException(`Product with ID ${productId} not found`);
+      }
+
+      product.quantity -= 1; // Decrease stock by 1
+      await queryRunner.manager.save(product);
+
+
+      await queryRunner.commitTransaction();
+      return updatedTransaction
+    } catch (error) {
+      await queryRunner.rollbackTransaction()
+      throw new BadRequestException(`Error: ${error}`);
+    } finally {
+      await queryRunner.release();
+    }
+
+
 
   }
 
-  findAll() {
-    return `This action returns all payments`;
-  }
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
-  }
-
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
-  }
 
   async createTokenCard(createPaymentDto: CreatePaymentDto) {
 
