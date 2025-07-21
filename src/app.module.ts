@@ -22,7 +22,7 @@ import { join } from 'path';
         port: +configService.getOrThrow<number>('DB_PORT'),
         autoLoadEntities: true,
         synchronize: true,
-        ssl: false,
+        ssl: true,
       }),
       inject: [ConfigService],
     }),
