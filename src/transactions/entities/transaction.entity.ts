@@ -1,5 +1,7 @@
 import { StatusTransaction } from "src/common/enums/status-transaction.enum";
 import { Customer } from "src/customers/entities/customer.entity";
+import { Delivery } from "src/deliveries/entities/delivery.entity";
+import { Product } from "src/products/entities/product.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("transactions")
@@ -42,4 +44,10 @@ export class Transaction {
 
     @ManyToOne(() => Customer, (customer) => customer.transactions)
     customer: Customer;
+
+    @ManyToOne(() => Product, (product) => product.transactions)
+    product: Product;
+
+    @ManyToOne(() => Delivery, (delivery) => delivery.transactions)
+    delivery: Delivery;
 }

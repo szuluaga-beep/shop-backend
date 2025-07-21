@@ -4,24 +4,21 @@ import { ConfigService } from '@nestjs/config';
 import { TokenCard } from 'src/common/interfaces/token-card.interface';
 import { Aceptation } from 'src/common/interfaces/aceptation-token.interface';
 import { PaymentSources } from 'src/common/interfaces/payment-sources.interface';
-import { TransactionsService } from 'src/transactions/transactions.service';
 import { StatusTransaction } from 'src/common/enums/status-transaction.enum';
 import { WompiTransaction } from 'src/common/interfaces/wompi-transaction';
 import { DataSource } from 'typeorm';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
-import { CustomersService } from 'src/customers/customers.service';
 import { Customer } from 'src/customers/entities/customer.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Product } from 'src/products/entities/product.entity';
+import { Delivery } from 'src/deliveries/entities/delivery.entity';
 
 @Injectable()
 export class PaymentsService {
 
   constructor(
     private configService: ConfigService,
-    private transactionService: TransactionsService,
     private dataSource: DataSource,
-    private customerService: CustomersService
   ) { }
 
   async create(createPaymentDto: CreatePaymentDto) {
@@ -33,6 +30,16 @@ export class PaymentsService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      const product = await queryRunner.manager.findOne(Product, { where: { id: productId } });
+
+      if (!product) {
+        throw new NotFoundException(`Product with ID ${productId} not found`);
+      }
+
+      if(product.quantity ===0){
+        throw new BadRequestException(`Product with ID ${productId} is out of stock`);
+      }
+
       const customer = new Customer();
       customer.email = customerEmail;
       customer.name = customerFullName;
@@ -40,6 +47,10 @@ export class PaymentsService {
 
       await queryRunner.manager.save(customer);
 
+      const delivery = new Delivery();
+      delivery.address = createPaymentDto.address;
+
+      await queryRunner.manager.save(delivery);
 
       const transaction = new Transaction();
       transaction.amount = amounInCents;
@@ -47,6 +58,8 @@ export class PaymentsService {
       transaction.status = StatusTransaction.PENDING;
       transaction.customer = customer;
       transaction.transactionId = uuidv4();
+      transaction.product = product;
+      transaction.delivery = delivery;
 
       await queryRunner.manager.save(transaction);
 
@@ -74,11 +87,7 @@ export class PaymentsService {
 
       // Update the stock or product inventory here if needed
 
-      const product = await queryRunner.manager.findOne(Product, { where: { id: productId } });
 
-      if (!product) {
-        throw new NotFoundException(`Product with ID ${productId} not found`);
-      }
 
       product.quantity -= 1; // Decrease stock by 1
       await queryRunner.manager.save(product);

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Transaction } from "src/transactions/entities/transaction.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("products")
 export class Product {
@@ -21,4 +22,7 @@ export class Product {
 
   @Column()
   quantity: number;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.product)
+  transactions: Transaction[];
 }
