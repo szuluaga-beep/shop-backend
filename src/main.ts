@@ -12,7 +12,7 @@ export async function bootstrap() {
     .setDescription('API documentation for the Shop application')
     .setVersion('1.0')
     .build();
-  app.setGlobalPrefix('api');
+  // app.setGlobalPrefix('api');
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
 
