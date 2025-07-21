@@ -6,8 +6,6 @@ import { PaymentsModule } from './payments/payments.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { CustomersModule } from './customers/customers.module';
 import { DeliveriesModule } from './deliveries/deliveries.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -30,10 +28,7 @@ import { join } from 'path';
     PaymentsModule,
     TransactionsModule,
     CustomersModule,
-    DeliveriesModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'documentation'),
-    })
+    DeliveriesModule
   ],
   controllers: [],
   providers: [],
