@@ -1,7 +1,7 @@
-import { Transaction } from "src/transactions/entities/transaction.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity("products")
+@Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
@@ -9,14 +9,14 @@ export class Product {
   @Column()
   name: string;
 
-  @Column("decimal")
+  @Column('decimal')
   price: number;
 
   @Column()
   description: string;
 
   @Column({
-    name: "image_url",
+    name: 'image_url',
   })
   imageUrl: string;
 

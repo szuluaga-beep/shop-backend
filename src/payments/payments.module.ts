@@ -12,4 +12,4 @@ import { Customer } from 'src/customers/entities/customer.entity';
   imports: [TypeOrmModule.forFeature([Transaction, Customer])],
   providers: [PaymentsService, TransactionsService, CustomersService],
 })
-export class PaymentsModule { }
+export class PaymentsModule {}
