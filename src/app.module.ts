@@ -6,6 +6,8 @@ import { PaymentsModule } from './payments/payments.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { CustomersModule } from './customers/customers.module';
 import { DeliveriesModule } from './deliveries/deliveries.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -20,7 +22,7 @@ import { DeliveriesModule } from './deliveries/deliveries.module';
         port: +configService.getOrThrow<number>('DB_PORT'),
         autoLoadEntities: true,
         synchronize: true,
-        ssl: true,
+        ssl: false,
       }),
       inject: [ConfigService],
     }),
@@ -29,8 +31,11 @@ import { DeliveriesModule } from './deliveries/deliveries.module';
     TransactionsModule,
     CustomersModule,
     DeliveriesModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'documentation'),
+    })
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

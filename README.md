@@ -49,6 +49,8 @@ src/
 
 ---
 
+![alt text](image.png)
+
 ## 📝 Endpoints principales
 
 - `/customers` - Gestión de clientes
