@@ -120,7 +120,7 @@ export class PaymentsService {
     }
   }
 
-  async createTokenCard(createPaymentDto: CreatePaymentDto) {
+  private async createTokenCard(createPaymentDto: CreatePaymentDto) {
     const {
       creditCardNumber,
       monthExpiration,
@@ -156,7 +156,7 @@ export class PaymentsService {
     return data;
   }
 
-  async getAceptationTokens() {
+  private async getAceptationTokens() {
     const response = await fetch(
       `${this.configService.getOrThrow<string>('API_WOMPI_URL')}/merchants/${this.getWompiPublicKey()}`,
       {
@@ -175,7 +175,7 @@ export class PaymentsService {
     return data;
   }
 
-  async createPaymentSources(
+  private async createPaymentSources(
     cardToken: string,
     customerEmail: string,
     acceptanceToken: string,
@@ -208,7 +208,7 @@ export class PaymentsService {
     return data;
   }
 
-  async createWompiTransaction(
+  private async createWompiTransaction(
     amountInCents: number,
     transactionId: string,
     paymentSourceId: number,
@@ -246,7 +246,7 @@ export class PaymentsService {
     return data;
   }
 
-  async getTransactionById(transactionId: string) {
+  private async getTransactionById(transactionId: string) {
     const response = await fetch(
       `${this.configService.getOrThrow<string>('API_WOMPI_URL')}/transactions/${transactionId}`,
       {
@@ -266,19 +266,19 @@ export class PaymentsService {
     return data;
   }
 
-  getWompiPublicKey(): string {
+  private getWompiPublicKey(): string {
     return `${this.configService.getOrThrow<string>('WOMPI_PUBLIC_KEY')}`;
   }
 
-  getWompiPrivateKey(): string {
+  private getWompiPrivateKey(): string {
     return `${this.configService.getOrThrow<string>('WOMPI_PRIVATE_KEY')}`;
   }
 
-  getWompiIntegrityKey(): string {
+  private getWompiIntegrityKey(): string {
     return `${this.configService.getOrThrow<string>('WOMPI_INTEGRITY_KEY')}`;
   }
 
-  async encrypt(transactionId: string, amountInCents: number) {
+  private async encrypt(transactionId: string, amountInCents: number) {
     const cadenaConcatenada = `${transactionId}${amountInCents}COP${this.getWompiIntegrityKey()}`;
 
     const encondedText = new TextEncoder().encode(cadenaConcatenada);
