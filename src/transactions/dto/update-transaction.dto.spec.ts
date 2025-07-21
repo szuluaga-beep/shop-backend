@@ -51,5 +51,5 @@ describe('UpdateTransactionDto', () => {
         const errors = await validate(dto);
         expect(errors.length).toBeGreaterThan(0);
     });
-    
+
 })
