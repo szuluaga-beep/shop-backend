@@ -68,9 +68,13 @@ describe('Main', () => {
         await bootstrap();
         expect(mockApp.useGlobalPipes).toHaveBeenCalledWith(
             expect.objectContaining({
-                whitelist: true,
-                transform: true,
-                forbidNonWhitelisted: true,
+
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                validatiorOptions: expect.objectContaining({
+                    transform: true,
+                    forbidNonWhitelisted: true,
+                    whitelist: true,
+                }),
             }),
         );
     })
